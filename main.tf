@@ -10,7 +10,7 @@ resource "aws_cloudfront_origin_access_identity" "cloud-oai" {
 }  
 
 resource "aws_s3_bucket" "my-bucket" {
-  provider          = aws.us_region
+  provider          = aws.us-east-1
   bucket            = var.bucket-name
 
   tags = {
@@ -20,13 +20,13 @@ resource "aws_s3_bucket" "my-bucket" {
 }
 
 resource "aws_s3_bucket_acl" "bucket-acl" {
-  provider          = aws.us_region
+  provider          = aws.us-east-1
   bucket = aws_s3_bucket.my-bucket.id
   acl    = "private"
 }
   
 resource "aws_s3_bucket_public_access_block" "s3-bucket-public" {
-  provider                = aws.us_region
+  provider                = aws.us-east-1
   bucket                  = aws_s3_bucket.my-bucket.id
   block_public_acls       = true
   block_public_policy     = true
@@ -35,7 +35,7 @@ resource "aws_s3_bucket_public_access_block" "s3-bucket-public" {
 }  
 
 data "aws_iam_policy_document" "bucket-policy" {
-  provider        = aws.us_region
+  provider        = aws.us-east-1
   statement {
     principals {
       type        = "AWS"
@@ -52,7 +52,7 @@ resources = ["${aws_s3_bucket.my-bucket.arn}/*"]
 }  
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  provider          = aws.us_region
+  provider          = aws.us-east-1
   bucket            = aws_s3_bucket.my-bucket.id
   policy            = data.aws_iam_policy_document.bucket-policy.json
 }
@@ -94,13 +94,13 @@ viewer_certificate {
  
  resource "aws_route53_zone" "primary" {
   provider          = aws.us_region 
-  name              = "example.com"
+  name              = "www.sk-aws.com"
 }
   
 resource "aws_route53_record" "www" {
   provider          = aws.us_region
   zone_id           = aws_route53_zone.primary.zone_id
-  name              = "www.example.com"
+  name              = "www.skazure.com"
   type              = "A"
 }  
   

@@ -37,17 +37,13 @@ resource "aws_s3_bucket_public_access_block" "s3-bucket-public" {
 data "aws_iam_policy_document" "bucket-policy" {
   provider        = aws.us_region
   statement {
+    actions       = ["s3:GetObject"]
+    resources     = ["${aws_s3_bucket.my-bucket.arn}/*"]
+    
     principals {
       type        = "AWS"
       identifiers = ["aws_cloudfront_origin_access_identity.cloud-oai.iam.arn"]
     }
-
-    actions = [
-      "s3:GetObject",
-      "s3:ListBucket",
-    ]
-
-resources = ["${aws_s3_bucket.my-bucket.arn}/*"]
   }
 }  
 
@@ -59,9 +55,10 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
   
 resource "aws_cloudfront_distribution" "s3_distribution" {
   provider          = aws.us_region
+  
   origin {
     domain_name = aws_s3_bucket.my-bucket.bucket_regional_domain_name
-    origin_id   = var.bucket-name
+    origin_id   = aws_s3_bucket.my-bucket
 
     s3_origin_config {
       origin_access_identity = "origin-access-identity/cloudfront/${aws_cloudfront_origin_access_identity.cloud-oai.id}"
@@ -77,7 +74,7 @@ enabled = true
 default_cache_behavior {
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
     cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = var.bucket-name
+    target_origin_id       = aws_s3_bucket.my-bucket
     viewer_protocol_policy = "redirect-to-https"
 }  
   
@@ -95,6 +92,7 @@ viewer_certificate {
  resource "aws_route53_zone" "primary" {
   provider          = aws.us_region 
   name              = "www.sk-aws.com"
+  private_zone      = false 
 }
   
 resource "aws_route53_record" "www" {

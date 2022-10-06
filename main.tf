@@ -1,17 +1,17 @@
 resource "aws_acm_certificate" "acm-resource" {
   provider          = aws.us_region
-  domain_name       = "var.domain-name"
+  domain_name       = var.domain-name
   validation_method = "DNS"
 }
   
 resource "aws_cloudfront_origin_access_identity" "cloud-oai" {
   provider          = aws.us_region
-  comment           = "var.bucket-name"
+  comment           = var.bucket-name
 }  
 
 resource "aws_s3_bucket" "my-bucket" {
   provider          = aws.us_region
-  bucket            = "var.bucket-name"
+  bucket            = var.bucket-name
 
   tags = {
     Name        = "My bucket"
@@ -61,7 +61,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   provider          = aws.us_region
   origin {
     domain_name = aws_s3_bucket.my-bucket.bucket_regional_domain_name
-    origin_id   = "var.bucket-name"
+    origin_id   = var.bucket-name
 
     s3_origin_config {
       origin_access_identity = "origin-access-identity/cloudfront/${aws_cloudfront_origin_access_identity.cloud-oai.id}"
@@ -77,7 +77,7 @@ enabled = true
 default_cache_behavior {
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
     cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "var.bucket-name"  
+    target_origin_id       = var.bucket-name
     viewer_protocol_policy = "redirect-to-https"
 }  
   

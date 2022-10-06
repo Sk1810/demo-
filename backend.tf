@@ -5,4 +5,10 @@ terraform {
     dynamodb_table = "terraform-sk-lock"
     region = "us-east-1"
   }
+   required_providers {
+        aws = {
+            source = "hashicorp/aws"
+        }
+    }
 }
+

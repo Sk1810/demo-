@@ -21,8 +21,8 @@ resource "aws_s3_bucket" "my-bucket" {
 
 resource "aws_s3_bucket_acl" "bucket-acl" {
   provider          = aws.us_region
-  bucket = aws_s3_bucket.my-bucket.id
-  acl    = "private"
+  bucket            = aws_s3_bucket.my-bucket.id
+  acl               = "private"
 }
   
 resource "aws_s3_bucket_public_access_block" "s3-bucket-public" {

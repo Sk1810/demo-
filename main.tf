@@ -1,10 +1,7 @@
 resource "aws_acm_certificate" "acm-resource" {
   domain_name       = "var.domain-name"
   validation_method = "DNS"
-
-  tags = {
-    Environment = "test"
-  }
+}
   
 resource "aws_cloudfront_origin_access_identity" "cloud-oai" {
   comment = "var.bucket-name"

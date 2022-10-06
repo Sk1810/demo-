@@ -78,6 +78,10 @@ restrictions {
       restriction_type = "none"
     }
   }  
+  
+viewer_certificate {
+    cloudfront_default_certificate = true
+  }  
 }  
  
  resource "aws_route53_zone" "primary" {

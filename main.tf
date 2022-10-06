@@ -1,14 +1,17 @@
 resource "aws_acm_certificate" "acm-resource" {
+  provider          = aws.us_region
   domain_name       = "var.domain-name"
   validation_method = "DNS"
 }
   
 resource "aws_cloudfront_origin_access_identity" "cloud-oai" {
-  comment = "var.bucket-name"
+  provider          = aws.us_region
+  comment           = "var.bucket-name"
 }  
 
 resource "aws_s3_bucket" "my-bucket" {
-  bucket = "var.bucket-name"
+  provider          = aws.us_region
+  bucket            = "var.bucket-name"
 
   tags = {
     Name        = "My bucket"
@@ -17,11 +20,13 @@ resource "aws_s3_bucket" "my-bucket" {
 }
 
 resource "aws_s3_bucket_acl" "bucket-acl" {
+  provider          = aws.us_region
   bucket = aws_s3_bucket.my-bucket.id
   acl    = "private"
 }
   
 resource "aws_s3_bucket_public_access_block" "s3-bucket-public" {
+  provider                = aws.us_region
   bucket                  = aws_s3_bucket.my-bucket.id
   block_public_acls       = true
   block_public_policy     = true
@@ -30,6 +35,7 @@ resource "aws_s3_bucket_public_access_block" "s3-bucket-public" {
 }  
 
 data "aws_iam_policy_document" "bucket-policy" {
+  provider        = aws.us_region
   statement {
     principals {
       type        = "AWS"
@@ -46,11 +52,13 @@ resources = ["${aws_s3_bucket.my-bucket.arn}/*"]
 }  
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = aws_s3_bucket.my-bucket.id
-  policy = data.aws_iam_policy_document.bucket-policy.json
+  provider          = aws.us_region
+  bucket            = aws_s3_bucket.my-bucket.id
+  policy            = data.aws_iam_policy_document.bucket-policy.json
 }
   
 resource "aws_cloudfront_distribution" "s3_distribution" {
+  provider          = aws.us_region
   origin {
     domain_name = aws_s3_bucket.my-bucket.bucket_regional_domain_name
     origin_id   = "S3-${aws_s3_bucket.my-bucket}"
@@ -85,12 +93,14 @@ viewer_certificate {
 }  
  
  resource "aws_route53_zone" "primary" {
-  name = "example.com"
+  provider          = aws.us_region 
+  name              = "example.com"
 }
   
 resource "aws_route53_record" "www" {
-  zone_id = aws_route53_zone.primary.zone_id
-  name    = "www.example.com"
-  type    = "A"
+  provider          = aws.us_region
+  zone_id           = aws_route53_zone.primary.zone_id
+  name              = "www.example.com"
+  type              = "A"
 }  
   
